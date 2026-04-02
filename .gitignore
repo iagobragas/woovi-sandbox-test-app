@@ -1,0 +1,4 @@
+.env
+data/webhooks.json
+.vercel
+node_modules

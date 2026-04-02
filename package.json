@@ -1,0 +1,10 @@
+{
+  "name": "woovi-sandbox-test-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal test app for Woovi sandbox charges and webhooks",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  }
+}

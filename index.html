@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Woovi Sandbox Test App</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f0e8;
+        --panel: #fffaf2;
+        --ink: #1f1c19;
+        --muted: #6a6258;
+        --accent: #0c7c59;
+        --accent-2: #c85c36;
+        --border: #d7c8b6;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        background:
+          radial-gradient(circle at top left, #f8d7a1 0, transparent 26%),
+          radial-gradient(circle at bottom right, #cde7d8 0, transparent 32%),
+          var(--bg);
+        color: var(--ink);
+      }
+
+      main {
+        width: min(960px, calc(100vw - 32px));
+        margin: 32px auto;
+        display: grid;
+        gap: 20px;
+      }
+
+      .hero,
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 8px 30px rgba(31, 28, 25, 0.08);
+      }
+
+      h1,
+      h2 {
+        margin: 0 0 12px;
+        line-height: 1.05;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 5vw, 4rem);
+      }
+
+      p,
+      li,
+      label,
+      button,
+      input {
+        font-size: 16px;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+
+      form {
+        display: grid;
+        gap: 12px;
+      }
+
+      input,
+      button {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        padding: 12px 14px;
+        font: inherit;
+      }
+
+      button {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+
+      button.secondary {
+        background: var(--accent-2);
+      }
+
+      pre {
+        overflow: auto;
+        background: #201d1a;
+        color: #f7f0e6;
+        border-radius: 12px;
+        padding: 14px;
+        margin: 0;
+      }
+
+      img {
+        max-width: 220px;
+        width: 100%;
+        display: block;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <h1>Woovi Sandbox Test App</h1>
+        <p class="muted">
+          Gera uma cobranca Pix no sandbox e recebe eventos de webhook em
+          <code>/webhooks/woovi</code>.
+        </p>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Criar cobranca</h2>
+          <form id="charge-form">
+            <label>
+              Valor em reais
+              <input name="value" type="text" inputmode="decimal" value="10,00" placeholder="R$ 10,00" required />
+            </label>
+            <label>
+              Correlation ID
+              <input name="correlationID" type="text" placeholder="gerado automaticamente" />
+            </label>
+            <label>
+              Nome do cliente
+              <input name="customerName" type="text" placeholder="Cliente Teste" />
+            </label>
+            <label>
+              Email do cliente
+              <input name="customerEmail" type="email" placeholder="cliente@teste.com" />
+            </label>
+            <button type="submit">Criar cobranca</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h2>Webhook</h2>
+          <p class="muted">
+            Configure este endpoint na Woovi:
+            <code>/webhooks/woovi</code>
+          </p>
+          <label>
+            Filtrar por evento
+            <input id="event-filter" type="text" placeholder="ex: OPENPIX:CHARGE_COMPLETED" />
+          </label>
+          <button class="secondary" id="refresh-webhooks" type="button">
+            Atualizar webhooks recebidos
+          </button>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Ultima cobranca</h2>
+          <div id="charge-output" class="muted">Nenhuma cobranca criada ainda.</div>
+          <p style="margin-top: 12px;">
+            <button id="simulate-payment" type="button">Simular pagamento da ultima cobranca</button>
+          </p>
+        </div>
+
+        <div class="panel">
+          <h2>Ultimo webhook</h2>
+          <pre id="webhook-output">Nenhum webhook recebido ainda.</pre>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById('charge-form');
+      const chargeOutput = document.getElementById('charge-output');
+      const webhookOutput = document.getElementById('webhook-output');
+      const refreshButton = document.getElementById('refresh-webhooks');
+      const eventFilter = document.getElementById('event-filter');
+      const simulateButton = document.getElementById('simulate-payment');
+      let lastCharge = null;
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        const customerName = formData.get('customerName');
+        const customerEmail = formData.get('customerEmail');
+
+        const body = {
+          value: formData.get('value'),
+          correlationID: formData.get('correlationID') || undefined,
+        };
+
+        if (customerName || customerEmail) {
+          body.customer = {};
+          if (customerName) body.customer.name = customerName;
+          if (customerEmail) body.customer.email = customerEmail;
+        }
+
+        chargeOutput.innerHTML = 'Criando cobranca...';
+
+        const response = await fetch('/api/charge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          chargeOutput.innerHTML = '<pre>' + escapeHtml(JSON.stringify(data, null, 2)) + '</pre>';
+          return;
+        }
+
+        lastCharge = data.charge;
+
+        const qrCodeImage = data.charge && data.charge.qrCodeImage;
+        chargeOutput.innerHTML =
+          '<p><strong>Status:</strong> ' + escapeHtml(data.charge.status || '-') + '</p>' +
+          '<p><strong>Correlation ID:</strong> ' + escapeHtml(data.correlationID || '-') + '</p>' +
+          '<p><strong>Payment Link:</strong> <a href="' + escapeHtml(data.charge.paymentLinkUrl || '#') + '" target="_blank" rel="noreferrer">' +
+          escapeHtml(data.charge.paymentLinkUrl || '-') + '</a></p>' +
+          '<p><strong>Transaction ID:</strong> ' + escapeHtml(data.charge.transactionID || '-') + '</p>' +
+          '<p><strong>BR Code:</strong></p><pre>' + escapeHtml(data.brCode || '') + '</pre>' +
+          (qrCodeImage ? '<p><img src="' + escapeHtml(qrCodeImage) + '" alt="QR Code" /></p>' : '');
+      });
+
+      refreshButton.addEventListener('click', loadWebhooks);
+      simulateButton.addEventListener('click', async () => {
+        if (!lastCharge || !lastCharge.transactionID) {
+          webhookOutput.textContent = 'Crie uma cobranca antes de simular o pagamento.';
+          return;
+        }
+
+        webhookOutput.textContent = 'Simulando pagamento...';
+
+        const response = await fetch('/api/charge/simulate-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ transactionID: lastCharge.transactionID }),
+        });
+
+        const data = await response.json();
+        webhookOutput.textContent = JSON.stringify(data, null, 2);
+      });
+      eventFilter.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          loadWebhooks();
+        }
+      });
+      loadWebhooks();
+
+      async function loadWebhooks() {
+        const event = eventFilter.value.trim();
+        const query = event ? '?event=' + encodeURIComponent(event) : '';
+        const response = await fetch('/api/webhooks' + query);
+        const data = await response.json();
+        const latest = data.webhooks && data.webhooks[0];
+        webhookOutput.textContent = latest
+          ? JSON.stringify(latest, null, 2)
+          : 'Nenhum webhook recebido ainda.';
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+      }
+    </script>
+  </body>
+</html>
