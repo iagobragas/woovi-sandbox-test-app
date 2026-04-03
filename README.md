@@ -45,6 +45,7 @@ http://127.0.0.1:3000
 - `PORT=3000`
 - `WOOVI_APP_ID=SEU_APP_ID_DO_SANDBOX`
 - `WOOVI_BASE_URL=https://api.woovi-sandbox.com`
+- `DATABASE_URL=` opcional para persistência em Postgres/Neon
 - `WEBHOOK_HMAC_SECRET=` opcional
 - `WOOVI_WEBHOOK_IP_ALLOWLIST=179.190.27.5,179.190.27.6,186.224.205.214`
 
@@ -87,8 +88,9 @@ Se estiver rodando localmente e quiser receber webhooks reais da Woovi, exponha 
 
 ## Persistência
 
-- em execução local, os webhooks podem ser persistidos em `data/webhooks.json`
-- na Vercel, os webhooks recentes ficam em memória da função e não devem ser tratados como armazenamento persistente
+- se `DATABASE_URL` estiver configurado, os webhooks são persistidos em Postgres
+- em execução local, sem banco, os webhooks podem ser persistidos em `data/webhooks.json`
+- na Vercel, sem banco, os webhooks recentes ficam em memória da função e não devem ser tratados como armazenamento persistente
 
 ## Deploy na Vercel
 
@@ -102,7 +104,9 @@ Variáveis recomendadas na Vercel:
 
 - `WOOVI_APP_ID`
 - `WOOVI_BASE_URL=https://api.woovi-sandbox.com`
+- `DATABASE_URL`
 - `WEBHOOK_HMAC_SECRET` opcional
+- `WOOVI_WEBHOOK_IP_ALLOWLIST`
 
 ## Observações
 
