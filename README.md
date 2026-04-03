@@ -46,6 +46,7 @@ http://127.0.0.1:3000
 - `WOOVI_APP_ID=SEU_APP_ID_DO_SANDBOX`
 - `WOOVI_BASE_URL=https://api.woovi-sandbox.com`
 - `WEBHOOK_HMAC_SECRET=` opcional
+- `WOOVI_WEBHOOK_IP_ALLOWLIST=179.190.27.5,179.190.27.6,186.224.205.214`
 
 ## Como obter um AppID
 
@@ -79,6 +80,7 @@ Se estiver rodando localmente e quiser receber webhooks reais da Woovi, exponha 
 
 - a autenticação com a Woovi usa `Authorization: <AppID>`
 - `x-webhook-signature` é o mecanismo recomendado para validar a origem do webhook
+- allowlist de IP pode ser usada como camada complementar
 - `X-OpenPix-Signature` foi mantido como validação HMAC opcional
 - não versione `.env`
 - não versione `data/webhooks.json`
