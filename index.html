@@ -3,286 +3,1222 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Woovi Sandbox Test App</title>
+    <title>Woovi Sandbox</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: '#3b82f6',
+              ink: '#f9fafb',
+              surface: '#0f172a',
+              line: '#1f2937',
+              panel: '#111827',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
     <style>
       :root {
-        color-scheme: light;
-        --bg: #f4f0e8;
-        --panel: #fffaf2;
-        --ink: #1f1c19;
-        --muted: #6a6258;
-        --accent: #0c7c59;
-        --accent-2: #c85c36;
-        --border: #d7c8b6;
+        --primary: #3b82f6;
+        --bg: #0f172a;
+        --panel: #111827;
+        --border: #1f2937;
+        --ink: #f9fafb;
+        --muted: #b0b8c4;
+        --dim: #848d9a;
       }
 
       * {
-        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
       }
 
       body {
-        margin: 0;
-        font-family: Georgia, "Times New Roman", serif;
-        background:
-          radial-gradient(circle at top left, #f8d7a1 0, transparent 26%),
-          radial-gradient(circle at bottom right, #cde7d8 0, transparent 32%),
-          var(--bg);
+        background-color: var(--bg);
         color: var(--ink);
       }
 
-      main {
-        width: min(960px, calc(100vw - 32px));
-        margin: 32px auto;
-        display: grid;
-        gap: 20px;
+      .site-bg {
+        background: radial-gradient(ellipse 90% 60% at 50% -8%, rgba(59, 130, 246, 0.14) 0%, transparent 60%),
+          var(--bg);
+        min-height: 100vh;
       }
 
-      .hero,
-      .panel {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        padding: 24px;
-        box-shadow: 0 8px 30px rgba(31, 28, 25, 0.08);
+      .site-nav {
+        background-color: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--border);
       }
 
-      h1,
-      h2 {
-        margin: 0 0 12px;
-        line-height: 1.05;
+      .divider-band {
+        background-color: rgba(17, 24, 39, 0.6);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
       }
 
-      h1 {
-        font-size: clamp(2rem, 5vw, 4rem);
-      }
-
-      p,
-      li,
-      label,
-      button,
-      input {
-        font-size: 16px;
-      }
-
-      .muted {
-        color: var(--muted);
-      }
-
-      .grid {
-        display: grid;
-        gap: 20px;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      }
-
-      form {
-        display: grid;
-        gap: 12px;
-      }
-
-      input,
-      button {
-        width: 100%;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-        padding: 12px 14px;
-        font: inherit;
-      }
-
-      button {
-        background: var(--accent);
-        color: #fff;
-        border: none;
-        cursor: pointer;
-      }
-
-      button.secondary {
-        background: var(--accent-2);
-      }
-
-      pre {
-        overflow: auto;
-        background: #201d1a;
-        color: #f7f0e6;
-        border-radius: 12px;
-        padding: 14px;
-        margin: 0;
-      }
-
-      img {
-        max-width: 220px;
-        width: 100%;
-        display: block;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-        background: #fff;
+      .alt-band {
+        background-color: rgba(17, 24, 39, 0.3);
       }
     </style>
   </head>
-  <body>
-    <main>
-      <section class="hero">
-        <h1>Woovi Sandbox Test App</h1>
-        <p class="muted">
-          Gera uma cobranca Pix no sandbox e recebe eventos de webhook em
-          <code>/webhooks/woovi</code>.
-        </p>
-      </section>
+  <body class="antialiased">
+    <div id="root"></div>
 
-      <section class="grid">
-        <div class="panel">
-          <h2>Criar cobranca</h2>
-          <form id="charge-form">
-            <label>
-              Valor em reais
-              <input name="value" type="text" inputmode="decimal" value="10,00" placeholder="R$ 10,00" required />
-            </label>
-            <label>
-              Correlation ID
-              <input name="correlationID" type="text" placeholder="gerado automaticamente" />
-            </label>
-            <label>
-              Nome do cliente
-              <input name="customerName" type="text" placeholder="Cliente Teste" />
-            </label>
-            <label>
-              Email do cliente
-              <input name="customerEmail" type="email" placeholder="cliente@teste.com" />
-            </label>
-            <button type="submit">Criar cobranca</button>
-          </form>
-        </div>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-        <div class="panel">
-          <h2>Webhook</h2>
-          <p class="muted">
-            Configure este endpoint na Woovi:
-            <code>/webhooks/woovi</code>
-          </p>
-          <label>
-            Filtrar por evento
-            <input id="event-filter" type="text" placeholder="ex: OPENPIX:CHARGE_COMPLETED" />
-          </label>
-          <button class="secondary" id="refresh-webhooks" type="button">
-            Atualizar webhooks recebidos
-          </button>
-        </div>
-      </section>
+    <script type="text/babel">
+      const { useEffect, useState } = React;
 
-      <section class="grid">
-        <div class="panel">
-          <h2>Ultima cobranca</h2>
-          <div id="charge-output" class="muted">Nenhuma cobranca criada ainda.</div>
-          <p style="margin-top: 12px;">
-            <button id="simulate-payment" type="button">Simular pagamento da ultima cobranca</button>
-          </p>
-        </div>
+      /* ─────────────────────────────────────────────────────────────────
+         Utility
+      ───────────────────────────────────────────────────────────────── */
+      function cn(...classes) {
+        return classes.filter(Boolean).join(' ');
+      }
 
-        <div class="panel">
-          <h2>Ultimo webhook</h2>
-          <pre id="webhook-output">Nenhum webhook recebido ainda.</pre>
-        </div>
-      </section>
-    </main>
+      /* ─────────────────────────────────────────────────────────────────
+         Icons (inline SVG, Lucide-style, 18×18)
+      ───────────────────────────────────────────────────────────────── */
+      const Icon = {
+        ArrowRight: () => (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        ),
+        CreditCard: () => (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect width="20" height="14" x="2" y="5" rx="2" />
+            <path d="M2 10h20" />
+          </svg>
+        ),
+        Zap: () => (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+        ),
+        Database: () => (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M3 5v14a9 3 0 0 0 18 0V5" />
+            <path d="M3 12a9 3 0 0 0 18 0" />
+          </svg>
+        ),
+        QrCode: () => (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect width="5" height="5" x="3" y="3" rx="1" />
+            <rect width="5" height="5" x="16" y="3" rx="1" />
+            <rect width="5" height="5" x="3" y="16" rx="1" />
+            <path d="M21 16h-3a2 2 0 0 0-2 2v3M21 21v.01M12 7v3a2 2 0 0 1-2 2H7M3 12h.01M12 3h.01M12 16v.01M16 12h1M21 12v.01M12 21v-1" />
+          </svg>
+        ),
+        Play: () => (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polygon points="10 8 16 12 10 16 10 8" />
+          </svg>
+        ),
+        Code: () => (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
+          </svg>
+        ),
+        Check: () => (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 6 9 17l-5-5" />
+          </svg>
+        ),
+        X: () => (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        ),
+        Shield: () => (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+        ),
+        RefreshCw: () => (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+            <path d="M21 3v5h-5" />
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+            <path d="M8 16H3v5" />
+          </svg>
+        ),
+      };
 
-    <script>
-      const form = document.getElementById('charge-form');
-      const chargeOutput = document.getElementById('charge-output');
-      const webhookOutput = document.getElementById('webhook-output');
-      const refreshButton = document.getElementById('refresh-webhooks');
-      const eventFilter = document.getElementById('event-filter');
-      const simulateButton = document.getElementById('simulate-payment');
-      let lastCharge = null;
+      /* ─────────────────────────────────────────────────────────────────
+         Design System
+      ───────────────────────────────────────────────────────────────── */
 
-      form.addEventListener('submit', async (event) => {
-        event.preventDefault();
+      function Container({ className = '', children }) {
+        return (
+          <div className={cn('mx-auto max-w-6xl px-6', className)}>
+            {children}
+          </div>
+        );
+      }
 
-        const formData = new FormData(form);
-        const customerName = formData.get('customerName');
-        const customerEmail = formData.get('customerEmail');
+      function Section({ id, className = '', children }) {
+        return (
+          <section id={id} className={cn('py-20', className)}>
+            <Container>{children}</Container>
+          </section>
+        );
+      }
 
-        const body = {
-          value: formData.get('value'),
-          correlationID: formData.get('correlationID') || undefined,
+      function Heading({ eyebrow, title, description, align = 'left' }) {
+        const centered = align === 'center';
+        return (
+          <div className={cn('space-y-4', centered && 'text-center')}>
+            {eyebrow && (
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#3b82f6]">
+                {eyebrow}
+              </p>
+            )}
+            <h2
+              className={cn(
+                'text-3xl font-bold tracking-tight text-[#f9fafb] md:text-4xl',
+                centered ? 'mx-auto max-w-3xl' : 'max-w-2xl',
+              )}
+            >
+              {title}
+            </h2>
+            {description && (
+              <p
+                className={cn(
+                  'text-base leading-7 text-[#b0b8c4] md:text-lg',
+                  centered ? 'mx-auto max-w-2xl' : 'max-w-xl',
+                )}
+              >
+                {description}
+              </p>
+            )}
+          </div>
+        );
+      }
+
+      function Card({ className = '', children }) {
+        return (
+          <div className={cn('rounded-xl border border-[#1f2937] bg-[#111827] p-6', className)}>
+            {children}
+          </div>
+        );
+      }
+
+      function FeatureCard({ icon, title, description }) {
+        return (
+          <div className="flex h-full flex-col gap-4 rounded-xl border border-[#1f2937] bg-[#111827] p-6 transition-all duration-200 hover:border-[#3b82f6]/60">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#1f2937] bg-[#0f172a] text-[#3b82f6]">
+              {icon}
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-[#f9fafb]">{title}</h3>
+              <p className="text-sm leading-6 text-[#b0b8c4]">{description}</p>
+            </div>
+          </div>
+        );
+      }
+
+      function Button({ className = '', variant = 'primary', size = 'md', children, ...props }) {
+        const base =
+          'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]/40 disabled:opacity-50 disabled:pointer-events-none';
+        const variants = {
+          primary: 'bg-[#3b82f6] text-white hover:bg-[#2563eb]',
+          secondary: 'border border-[#1f2937] bg-[#111827] text-[#f9fafb] hover:bg-[#1f2937]',
+          ghost: 'text-[#b0b8c4] hover:text-[#f9fafb]',
         };
+        const sizes = {
+          sm: 'px-3 py-1.5 text-xs',
+          md: 'px-4 py-2.5 text-sm',
+          lg: 'px-6 py-3 text-sm',
+        };
+        return (
+          <button
+            className={cn(base, variants[variant] ?? variants.primary, sizes[size] ?? sizes.md, className)}
+            {...props}
+          >
+            {children}
+          </button>
+        );
+      }
 
-        if (customerName || customerEmail) {
-          body.customer = {};
-          if (customerName) body.customer.name = customerName;
-          if (customerEmail) body.customer.email = customerEmail;
+      function Badge({ children, className = '' }) {
+        return (
+          <span
+            className={cn(
+              'inline-flex items-center gap-1.5 rounded-full border border-[#1f2937] bg-[#111827] px-3 py-1 text-xs font-medium text-[#b0b8c4]',
+              className,
+            )}
+          >
+            {children}
+          </span>
+        );
+      }
+
+      function DataRow({ label, value }) {
+        return (
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#848d9a]">
+              {label}
+            </span>
+            <span className="truncate text-sm font-medium text-[#f9fafb]">{value || '—'}</span>
+          </div>
+        );
+      }
+
+      function StatusBadge({ value }) {
+        const map = {
+          ACTIVE: 'text-[#22c55e] bg-[#22c55e]/10 border-[#22c55e]/25',
+          COMPLETED: 'text-[#22c55e] bg-[#22c55e]/10 border-[#22c55e]/25',
+          EXPIRED: 'text-[#ef4444] bg-[#ef4444]/10 border-[#ef4444]/25',
+        };
+        const cls = map[value] ?? 'text-[#b0b8c4] bg-[#111827] border-[#1f2937]';
+        return (
+          <span className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium', cls)}>
+            {value || '—'}
+          </span>
+        );
+      }
+
+      function TabButton({ active, children, ...props }) {
+        return (
+          <button
+            className={cn(
+              'rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
+              active ? 'bg-[#3b82f6] text-white' : 'text-[#b0b8c4] hover:text-[#f9fafb]',
+            )}
+            {...props}
+          >
+            {children}
+          </button>
+        );
+      }
+
+      function Field({ label, name, value, onChange, onChangeValue, type = 'text', placeholder }) {
+        const handleChange = (e) => {
+          if (onChangeValue) {
+            onChangeValue(e.target.value);
+            return;
+          }
+          onChange((prev) => ({ ...prev, [name]: e.target.value }));
+        };
+        return (
+          <label className="grid gap-1.5">
+            <span className="text-xs font-medium text-[#b0b8c4]">{label}</span>
+            <input
+              type={type}
+              value={value}
+              onChange={handleChange}
+              placeholder={placeholder}
+              className="h-10 rounded-lg border border-[#1f2937] bg-[#0f172a] px-3 text-sm text-[#f9fafb] outline-none transition-colors placeholder:text-[#848d9a] focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/20"
+            />
+          </label>
+        );
+      }
+
+      /* ─────────────────────────────────────────────────────────────────
+         1. Navbar
+      ───────────────────────────────────────────────────────────────── */
+      function Navbar() {
+        const links = [
+          { label: 'Features', href: '#features' },
+          { label: 'Como funciona', href: '#how-it-works' },
+          { label: 'Playground', href: '#playground' },
+          { label: 'Webhooks', href: '#webhooks' },
+        ];
+
+        return (
+          <header className="site-nav sticky top-0 z-50">
+            <Container className="flex h-16 items-center justify-between">
+              <div className="flex items-center gap-8">
+                <a href="#" className="flex items-center gap-2 text-sm font-semibold text-[#f9fafb]">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[#3b82f6] text-xs font-bold text-white">
+                    W
+                  </div>
+                  Woovi Sandbox
+                </a>
+                <nav className="hidden items-center gap-6 md:flex">
+                  {links.map((l) => (
+                    <a
+                      key={l.href}
+                      href={l.href}
+                      className="text-sm text-[#b0b8c4] transition-colors hover:text-[#f9fafb]"
+                    >
+                      {l.label}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+              <a href="#playground">
+                <Button size="sm">
+                  Testar sandbox
+                  <Icon.ArrowRight />
+                </Button>
+              </a>
+            </Container>
+          </header>
+        );
+      }
+
+      /* ─────────────────────────────────────────────────────────────────
+         2. Hero
+      ───────────────────────────────────────────────────────────────── */
+      function HeroSection() {
+        return (
+          <section className="py-28 md:py-36">
+            <Container>
+              <div className="mx-auto max-w-4xl text-center">
+                <Badge className="mb-8">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#3b82f6]" />
+                  Ambiente de teste · Woovi API
+                </Badge>
+                <h1 className="mb-6 text-5xl font-bold tracking-tight text-[#f9fafb] md:text-6xl lg:text-[4.5rem]">
+                  Valide sua integração{' '}
+                  <span className="text-[#3b82f6]">Pix</span>{' '}
+                  sem risco
+                </h1>
+                <p className="mx-auto mb-10 max-w-2xl text-lg leading-8 text-[#b0b8c4]">
+                  Crie cobranças, simule pagamentos e monitore webhooks em um ambiente
+                  sandbox isolado com persistência real em Postgres. Tudo antes da produção.
+                </p>
+                <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <a href="#playground">
+                    <Button size="lg">
+                      Criar cobrança
+                      <Icon.ArrowRight />
+                    </Button>
+                  </a>
+                  <a href="#how-it-works">
+                    <Button size="lg" variant="secondary">
+                      Ver como funciona
+                    </Button>
+                  </a>
+                </div>
+              </div>
+            </Container>
+          </section>
+        );
+      }
+
+      /* ─────────────────────────────────────────────────────────────────
+         3. Social Proof
+      ───────────────────────────────────────────────────────────────── */
+      function SocialProofSection() {
+        const stack = [
+          { label: 'React 18' },
+          { label: 'Tailwind CSS' },
+          { label: 'Vercel' },
+          { label: 'Neon Postgres' },
+          { label: 'Woovi API' },
+          { label: 'Serverless' },
+        ];
+
+        return (
+          <div className="divider-band py-8">
+            <Container>
+              <p className="mb-6 text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-[#848d9a]">
+                Stack da plataforma
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+                {stack.map((item) => (
+                  <span key={item.label} className="text-sm font-medium text-[#848d9a]">
+                    {item.label}
+                  </span>
+                ))}
+              </div>
+            </Container>
+          </div>
+        );
+      }
+
+      /* ─────────────────────────────────────────────────────────────────
+         4. Problem + Solution
+      ───────────────────────────────────────────────────────────────── */
+      function ProblemSolutionSection() {
+        const problems = [
+          'Cobranças acidentais em contas reais',
+          'Webhooks sem rastreabilidade ou persistência',
+          'Debugging limitado em ambientes de produção',
+          'Histórico perdido entre deploys serverless',
+        ];
+        const solutions = [
+          'AppID sandbox separado da conta de produção',
+          'Assinatura HMAC e IP allowlist em todos os eventos',
+          'Histórico persistido em Postgres entre reinicializações',
+          'Simulação de pagamento com um clique',
+        ];
+
+        return (
+          <Section>
+            <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
+              <div className="space-y-8">
+                <Heading
+                  eyebrow="O problema"
+                  title="Testar Pix em produção é caro e arriscado"
+                  description="Validar fluxos de pagamento diretamente em produção expõe a aplicação a cobranças reais e erros sem rollback."
+                />
+                <ul className="space-y-3">
+                  {problems.map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm text-[#b0b8c4]">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#ef4444]/25 bg-[#ef4444]/10 text-[#ef4444]">
+                        <Icon.X />
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="space-y-8">
+                <Heading
+                  eyebrow="A solução"
+                  title="Sandbox isolado com as mesmas garantias de produção"
+                  description="Um ambiente completo para iterar com segurança antes de qualquer deploy em produção."
+                />
+                <ul className="space-y-3">
+                  {solutions.map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm text-[#b0b8c4]">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#22c55e]/25 bg-[#22c55e]/10 text-[#22c55e]">
+                        <Icon.Check />
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </Section>
+        );
+      }
+
+      /* ─────────────────────────────────────────────────────────────────
+         5. Features
+      ───────────────────────────────────────────────────────────────── */
+      function FeaturesSection() {
+        const features = [
+          {
+            icon: <Icon.CreditCard />,
+            title: 'Cobranças Pix reais',
+            description:
+              'Crie cobranças com AppID sandbox, valores em reais e links de pagamento compartilháveis instantaneamente.',
+          },
+          {
+            icon: <Icon.Zap />,
+            title: 'Webhooks validados',
+            description:
+              'Receba eventos com verificação de assinatura HMAC e allowlist de IP para máxima segurança.',
+          },
+          {
+            icon: <Icon.Database />,
+            title: 'Histórico persistido',
+            description:
+              'Eventos armazenados em Neon Postgres, disponíveis mesmo após múltiplos deploys ou reinicializações.',
+          },
+          {
+            icon: <Icon.QrCode />,
+            title: 'QR Code gerado',
+            description:
+              'Visualize o QR Code da cobrança diretamente no playground para validar o fluxo de scan completo.',
+          },
+          {
+            icon: <Icon.Play />,
+            title: 'Simulação de pagamento',
+            description:
+              'Dispare pagamentos simulados com um clique e observe o ciclo de vida completo em tempo real.',
+          },
+          {
+            icon: <Icon.Code />,
+            title: 'Stack serverless',
+            description:
+              'Frontend React, funções serverless Vercel e banco Neon Postgres — zero infraestrutura para gerenciar.',
+          },
+        ];
+
+        return (
+          <Section id="features" className="alt-band">
+            <Heading
+              align="center"
+              eyebrow="Features"
+              title="Tudo que você precisa para validar a integração"
+              description="Um conjunto coeso de ferramentas para testar cobranças Pix, monitorar webhooks e iterar com segurança."
+            />
+            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {features.map((f) => (
+                <FeatureCard key={f.title} icon={f.icon} title={f.title} description={f.description} />
+              ))}
+            </div>
+          </Section>
+        );
+      }
+
+      /* ─────────────────────────────────────────────────────────────────
+         6. How it works
+      ───────────────────────────────────────────────────────────────── */
+      function HowItWorksSection() {
+        const steps = [
+          {
+            n: '01',
+            title: 'Crie uma cobrança',
+            description:
+              'Preencha o valor e dados opcionais do cliente. A API Woovi gera o QR Code e link de pagamento instantaneamente.',
+          },
+          {
+            n: '02',
+            title: 'Simule o pagamento',
+            description:
+              'Use o botão de simulação para disparar o pagamento no sandbox e acionar o ciclo completo de webhooks.',
+          },
+          {
+            n: '03',
+            title: 'Monitore os eventos',
+            description:
+              'Consulte o histórico persistido, filtre por tipo de evento e inspecione o payload completo no banco.',
+          },
+        ];
+
+        return (
+          <Section id="how-it-works">
+            <Heading
+              align="center"
+              eyebrow="Como funciona"
+              title="Fluxo Pix completo em três passos"
+              description="Do formulário ao webhook em segundos, sem nenhuma configuração extra."
+            />
+            <div className="mt-12 grid gap-8 md:grid-cols-3">
+              {steps.map((step) => (
+                <div key={step.n} className="flex flex-col gap-5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#1f2937] bg-[#111827] text-xs font-bold text-[#3b82f6]">
+                    {step.n}
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-semibold text-[#f9fafb]">{step.title}</h3>
+                    <p className="text-sm leading-6 text-[#b0b8c4]">{step.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        );
+      }
+
+      /* ─────────────────────────────────────────────────────────────────
+         7. Benefits
+      ───────────────────────────────────────────────────────────────── */
+      function BenefitsSection() {
+        const benefits = [
+          {
+            title: 'Zero risco de cobranças acidentais',
+            description:
+              'O AppID sandbox nunca processa transações financeiras reais, eliminando exposição durante o desenvolvimento.',
+          },
+          {
+            title: 'Persistência entre deploys',
+            description:
+              'Diferente de memória em processo, os webhooks ficam armazenados no Postgres disponíveis após reinicializações.',
+          },
+          {
+            title: 'Segurança desde o início',
+            description:
+              'Verificação HMAC e allowlist de IP ativadas no ambiente de teste — mesmas garantias de produção.',
+          },
+          {
+            title: 'Arquitetura portável',
+            description:
+              'O padrão serverless + Postgres pode ser portado diretamente para produção com mínimas alterações.',
+          },
+        ];
+
+        return (
+          <Section className="alt-band">
+            <div className="grid gap-12 lg:grid-cols-[1fr_1.6fr] lg:gap-20">
+              <Heading
+                eyebrow="Benefícios"
+                title="Desenvolvido para times que priorizam qualidade"
+                description="Cada detalhe foi projetado para reduzir o atrito entre desenvolvimento e produção."
+              />
+              <div className="grid gap-8 sm:grid-cols-2">
+                {benefits.map((b) => (
+                  <div key={b.title} className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#3b82f6]" />
+                      <h3 className="text-sm font-semibold text-[#f9fafb]">{b.title}</h3>
+                    </div>
+                    <p className="pl-3.5 text-sm leading-6 text-[#b0b8c4]">{b.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Section>
+        );
+      }
+
+      /* ─────────────────────────────────────────────────────────────────
+         Playground (interactive — charge creation)
+      ───────────────────────────────────────────────────────────────── */
+      function PlaygroundSection({
+        form,
+        setForm,
+        lastCharge,
+        setLastCharge,
+        isCreatingCharge,
+        setIsCreatingCharge,
+        chargeMessage,
+        setChargeMessage,
+        simulatePayment,
+        isSimulating,
+      }) {
+        async function createCharge(event) {
+          event.preventDefault();
+          setIsCreatingCharge(true);
+          setChargeMessage('');
+
+          const body = {
+            value: form.value,
+            correlationID: form.correlationID || undefined,
+          };
+
+          if (form.customerName || form.customerEmail) {
+            body.customer = {};
+            if (form.customerName) body.customer.name = form.customerName;
+            if (form.customerEmail) body.customer.email = form.customerEmail;
+          }
+
+          try {
+            const response = await fetch('/api/charge', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body),
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+              setLastCharge({ error: data });
+              setChargeMessage('A Woovi retornou um erro ao criar a cobrança.');
+              return;
+            }
+
+            setLastCharge({ ...data.charge, brCode: data.brCode, correlationID: data.correlationID });
+            setChargeMessage('Cobrança criada com sucesso no sandbox.');
+          } catch (error) {
+            setLastCharge({ error: { details: error.message } });
+            setChargeMessage('Falha de rede ao criar a cobrança.');
+          } finally {
+            setIsCreatingCharge(false);
+          }
         }
 
-        chargeOutput.innerHTML = 'Criando cobranca...';
+        const isSuccess = chargeMessage.includes('sucesso');
 
-        const response = await fetch('/api/charge', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+        return (
+          <Section id="playground">
+            <Heading
+              eyebrow="Playground"
+              title="Execute o fluxo real do sandbox"
+              description="Preencha os dados, gere o QR Code e simule o pagamento para validar a entrega dos webhooks em tempo real."
+            />
+            <div className="mt-12 grid gap-8 lg:grid-cols-2">
+              {/* ── Form ── */}
+              <Card>
+                <div className="mb-6 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-[#f9fafb]">Nova cobrança</p>
+                    <p className="text-xs text-[#848d9a]">Preencha os dados e gere o QR Code</p>
+                  </div>
+                  <Badge>Sandbox</Badge>
+                </div>
+                <form className="grid gap-5" onSubmit={createCharge}>
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <Field
+                      label="Valor em reais"
+                      name="value"
+                      value={form.value}
+                      onChange={setForm}
+                      placeholder="R$ 10,00"
+                    />
+                    <Field
+                      label="Correlation ID"
+                      name="correlationID"
+                      value={form.correlationID}
+                      onChange={setForm}
+                      placeholder="gerado automaticamente"
+                    />
+                  </div>
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <Field
+                      label="Nome do cliente"
+                      name="customerName"
+                      value={form.customerName}
+                      onChange={setForm}
+                      placeholder="Cliente Teste"
+                    />
+                    <Field
+                      label="Email do cliente"
+                      name="customerEmail"
+                      type="email"
+                      value={form.customerEmail}
+                      onChange={setForm}
+                      placeholder="cliente@teste.com"
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-3 pt-1">
+                    <Button type="submit" disabled={isCreatingCharge}>
+                      {isCreatingCharge ? 'Criando...' : 'Criar cobrança'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={isSimulating}
+                      onClick={simulatePayment}
+                    >
+                      {isSimulating ? 'Simulando...' : 'Simular pagamento'}
+                    </Button>
+                  </div>
+                  {chargeMessage && (
+                    <p className={cn('text-xs', isSuccess ? 'text-[#22c55e]' : 'text-[#b0b8c4]')}>
+                      {chargeMessage}
+                    </p>
+                  )}
+                </form>
+              </Card>
+
+              {/* ── Result ── */}
+              <Card>
+                <div className="mb-6 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-[#f9fafb]">Última cobrança</p>
+                    <p className="text-xs text-[#848d9a]">Status e dados retornados da API</p>
+                  </div>
+                  {lastCharge && !lastCharge.error && (
+                    <StatusBadge value={lastCharge.status} />
+                  )}
+                </div>
+
+                {lastCharge && !lastCharge.error ? (
+                  <div className="space-y-6">
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <DataRow label="Transaction ID" value={lastCharge.transactionID} />
+                      <DataRow label="Correlation ID" value={lastCharge.correlationID} />
+                    </div>
+                    {lastCharge.paymentLinkUrl && (
+                      <div>
+                        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#848d9a]">
+                          Payment Link
+                        </span>
+                        <a
+                          href={lastCharge.paymentLinkUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-1 block break-all text-xs text-[#3b82f6] underline underline-offset-2 hover:text-[#60a5fa]"
+                        >
+                          {lastCharge.paymentLinkUrl}
+                        </a>
+                      </div>
+                    )}
+                    {lastCharge.qrCodeImage && (
+                      <div className="flex justify-center border-t border-[#1f2937] pt-6">
+                        <img
+                          src={lastCharge.qrCodeImage}
+                          alt="QR Code da cobrança"
+                          className="w-36 rounded-lg border border-[#1f2937] bg-[#0f172a]"
+                        />
+                      </div>
+                    )}
+                    <details className="border-t border-[#1f2937] pt-4">
+                      <summary className="cursor-pointer text-xs font-medium text-[#848d9a] hover:text-[#b0b8c4]">
+                        Ver JSON completo
+                      </summary>
+                      <pre className="mt-3 max-h-56 overflow-auto rounded-lg border border-[#1f2937] bg-[#0f172a] p-4 text-xs leading-5 text-[#f9fafb]">
+                        {JSON.stringify({ brCode: lastCharge.brCode, charge: lastCharge }, null, 2)}
+                      </pre>
+                    </details>
+                  </div>
+                ) : lastCharge?.error ? (
+                  <pre className="rounded-lg border border-[#ef4444]/20 bg-[#ef4444]/5 p-4 text-xs leading-5 text-[#f9fafb]">
+                    {JSON.stringify(lastCharge.error, null, 2)}
+                  </pre>
+                ) : (
+                  <div className="flex h-44 items-center justify-center rounded-lg border border-dashed border-[#1f2937]">
+                    <p className="text-sm text-[#848d9a]">Nenhuma cobrança criada ainda</p>
+                  </div>
+                )}
+              </Card>
+            </div>
+          </Section>
+        );
+      }
+
+      /* ─────────────────────────────────────────────────────────────────
+         Webhooks (interactive)
+      ───────────────────────────────────────────────────────────────── */
+      function WebhooksSection({
+        eventFilter,
+        setEventFilter,
+        loadWebhooks,
+        isLoadingWebhooks,
+        latestWebhook,
+        latestWebhookSummary,
+        webhookHistory,
+        activeWebhookTab,
+        setActiveWebhookTab,
+        webhookMessage,
+      }) {
+        return (
+          <Section id="webhooks" className="pt-0">
+            <Heading
+              eyebrow="Webhooks"
+              title="Monitore o histórico de eventos"
+              description="Filtre por tipo de evento e inspecione o payload completo salvo no banco para validar o fluxo ponta a ponta."
+            />
+            <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_1.4fr]">
+              {/* ── Filter ── */}
+              <Card>
+                <div className="mb-6">
+                  <p className="text-sm font-semibold text-[#f9fafb]">Filtro de eventos</p>
+                  <p className="text-xs text-[#848d9a]">Consulte eventos por tipo ou veja todos</p>
+                </div>
+                <div className="grid gap-5">
+                  <Field
+                    label="Tipo de evento"
+                    name="eventFilter"
+                    value={eventFilter}
+                    onChangeValue={setEventFilter}
+                    placeholder="ex: OPENPIX:CHARGE_COMPLETED"
+                  />
+                  <div className="flex flex-wrap gap-3">
+                    <Button onClick={loadWebhooks} disabled={isLoadingWebhooks}>
+                      <Icon.RefreshCw />
+                      {isLoadingWebhooks ? 'Atualizando...' : 'Atualizar'}
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setEventFilter('');
+                        setTimeout(loadWebhooks, 0);
+                      }}
+                    >
+                      Limpar
+                    </Button>
+                  </div>
+                  <div className="border-t border-[#1f2937] pt-4">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#848d9a]">
+                      Endpoint público
+                    </span>
+                    <p className="mt-1 break-all text-xs font-medium text-[#f9fafb]">
+                      https://woovi-sandbox.iagobragas.com.br/webhooks/woovi
+                    </p>
+                  </div>
+                  {webhookMessage && (
+                    <p className="text-xs text-[#b0b8c4]">{webhookMessage}</p>
+                  )}
+                </div>
+              </Card>
+
+              {/* ── Events ── */}
+              <Card>
+                <div className="mb-6 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-[#f9fafb]">Histórico persistido</p>
+                    <p className="text-xs text-[#848d9a]">Armazenado em Neon Postgres</p>
+                  </div>
+                  <div className="flex gap-1">
+                    <TabButton
+                      active={activeWebhookTab === 'summary'}
+                      onClick={() => setActiveWebhookTab('summary')}
+                    >
+                      Resumo
+                    </TabButton>
+                    <TabButton
+                      active={activeWebhookTab === 'history'}
+                      onClick={() => setActiveWebhookTab('history')}
+                    >
+                      Histórico
+                    </TabButton>
+                  </div>
+                </div>
+
+                {activeWebhookTab === 'summary' ? (
+                  latestWebhookSummary ? (
+                    <div className="space-y-6">
+                      <div className="grid gap-5 sm:grid-cols-2">
+                        {Object.entries(latestWebhookSummary).map(([label, value]) => (
+                          <DataRow key={label} label={label} value={value} />
+                        ))}
+                      </div>
+                      <details className="border-t border-[#1f2937] pt-4">
+                        <summary className="cursor-pointer text-xs font-medium text-[#848d9a] hover:text-[#b0b8c4]">
+                          Ver payload JSON completo
+                        </summary>
+                        <div className="mt-3 max-h-72 overflow-auto">
+                          <pre className="rounded-lg border border-[#1f2937] bg-[#0f172a] p-4 text-xs leading-5 text-[#f9fafb]">
+                            {JSON.stringify(latestWebhook, null, 2)}
+                          </pre>
+                        </div>
+                      </details>
+                    </div>
+                  ) : (
+                    <div className="flex h-44 items-center justify-center rounded-lg border border-dashed border-[#1f2937]">
+                      <p className="text-sm text-[#848d9a]">Nenhum webhook recebido ainda</p>
+                    </div>
+                  )
+                ) : webhookHistory.length ? (
+                  <div className="divide-y divide-[#1f2937]">
+                    {webhookHistory.map((item, idx) => {
+                      const correlationID =
+                        item.payload?.charge?.correlationID ||
+                        item.payload?.pix?.charge?.correlationID ||
+                        '—';
+                      const transactionID =
+                        item.payload?.charge?.transactionID ||
+                        item.payload?.pix?.transactionID ||
+                        '—';
+                      const status =
+                        item.payload?.charge?.status ||
+                        item.payload?.pix?.status ||
+                        '—';
+                      return (
+                        <div
+                          key={`${item.event}-${item.receivedAt}-${idx}`}
+                          className="py-5 first:pt-0 last:pb-0"
+                        >
+                          <div className="grid gap-4 sm:grid-cols-3">
+                            <DataRow label="Evento" value={item.event} />
+                            <DataRow label="Status" value={status} />
+                            <DataRow label="Recebido em" value={item.receivedAt} />
+                            <DataRow label="Source IP" value={item.sourceIp} />
+                            <DataRow label="Correlation ID" value={correlationID} />
+                            <DataRow label="Transaction ID" value={transactionID} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex h-44 items-center justify-center rounded-lg border border-dashed border-[#1f2937]">
+                    <p className="text-sm text-[#848d9a]">Nenhum webhook encontrado</p>
+                  </div>
+                )}
+              </Card>
+            </div>
+          </Section>
+        );
+      }
+
+      /* ─────────────────────────────────────────────────────────────────
+         8. Final CTA
+      ───────────────────────────────────────────────────────────────── */
+      function FinalCTASection() {
+        return (
+          <Section>
+            <div className="rounded-2xl border border-[#1f2937] bg-[#111827] p-10 text-center md:p-16">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#3b82f6]">
+                Pronto para começar
+              </p>
+              <h2 className="mb-4 text-3xl font-bold tracking-tight text-[#f9fafb] md:text-4xl">
+                Comece a validar sua integração agora
+              </h2>
+              <p className="mx-auto mb-8 max-w-xl text-base leading-7 text-[#b0b8c4]">
+                Endpoint público configurado, histórico persistido e fluxo completo de criação,
+                simulação e webhook disponíveis imediatamente.
+              </p>
+              <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <a href="#playground">
+                  <Button size="lg">
+                    Abrir playground
+                    <Icon.ArrowRight />
+                  </Button>
+                </a>
+                <a href="#webhooks">
+                  <Button size="lg" variant="secondary">
+                    Ver webhooks
+                  </Button>
+                </a>
+              </div>
+            </div>
+          </Section>
+        );
+      }
+
+      /* ─────────────────────────────────────────────────────────────────
+         9. Footer
+      ───────────────────────────────────────────────────────────────── */
+      function Footer() {
+        const links = [
+          { label: 'Features', href: '#features' },
+          { label: 'Como funciona', href: '#how-it-works' },
+          { label: 'Playground', href: '#playground' },
+          { label: 'Webhooks', href: '#webhooks' },
+        ];
+        return (
+          <footer className="border-t border-[#1f2937] py-10">
+            <Container className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center gap-2 text-sm font-semibold text-[#f9fafb]">
+                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#3b82f6] text-xs font-bold text-white">
+                  W
+                </div>
+                Woovi Sandbox
+              </div>
+              <nav className="flex flex-wrap gap-6 text-sm text-[#848d9a]">
+                {links.map((l) => (
+                  <a key={l.href} href={l.href} className="transition-colors hover:text-[#f9fafb]">
+                    {l.label}
+                  </a>
+                ))}
+              </nav>
+              <p className="text-sm text-[#848d9a]">© 2025 Woovi Sandbox</p>
+            </Container>
+          </footer>
+        );
+      }
+
+      /* ─────────────────────────────────────────────────────────────────
+         App root
+      ───────────────────────────────────────────────────────────────── */
+      function App() {
+        const [form, setForm] = useState({
+          value: '10,00',
+          correlationID: '',
+          customerName: '',
+          customerEmail: '',
         });
+        const [lastCharge, setLastCharge] = useState(null);
+        const [latestWebhook, setLatestWebhook] = useState(null);
+        const [eventFilter, setEventFilter] = useState('');
+        const [webhookHistory, setWebhookHistory] = useState([]);
+        const [activeWebhookTab, setActiveWebhookTab] = useState('summary');
+        const [isCreatingCharge, setIsCreatingCharge] = useState(false);
+        const [isLoadingWebhooks, setIsLoadingWebhooks] = useState(false);
+        const [isSimulating, setIsSimulating] = useState(false);
+        const [chargeMessage, setChargeMessage] = useState('');
+        const [webhookMessage, setWebhookMessage] = useState('');
 
-        const data = await response.json();
-
-        if (!response.ok) {
-          chargeOutput.innerHTML = '<pre>' + escapeHtml(JSON.stringify(data, null, 2)) + '</pre>';
-          return;
-        }
-
-        lastCharge = data.charge;
-
-        const qrCodeImage = data.charge && data.charge.qrCodeImage;
-        chargeOutput.innerHTML =
-          '<p><strong>Status:</strong> ' + escapeHtml(data.charge.status || '-') + '</p>' +
-          '<p><strong>Correlation ID:</strong> ' + escapeHtml(data.correlationID || '-') + '</p>' +
-          '<p><strong>Payment Link:</strong> <a href="' + escapeHtml(data.charge.paymentLinkUrl || '#') + '" target="_blank" rel="noreferrer">' +
-          escapeHtml(data.charge.paymentLinkUrl || '-') + '</a></p>' +
-          '<p><strong>Transaction ID:</strong> ' + escapeHtml(data.charge.transactionID || '-') + '</p>' +
-          '<p><strong>BR Code:</strong></p><pre>' + escapeHtml(data.brCode || '') + '</pre>' +
-          (qrCodeImage ? '<p><img src="' + escapeHtml(qrCodeImage) + '" alt="QR Code" /></p>' : '');
-      });
-
-      refreshButton.addEventListener('click', loadWebhooks);
-      simulateButton.addEventListener('click', async () => {
-        if (!lastCharge || !lastCharge.transactionID) {
-          webhookOutput.textContent = 'Crie uma cobranca antes de simular o pagamento.';
-          return;
-        }
-
-        webhookOutput.textContent = 'Simulando pagamento...';
-
-        const response = await fetch('/api/charge/simulate-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ transactionID: lastCharge.transactionID }),
-        });
-
-        const data = await response.json();
-        webhookOutput.textContent = JSON.stringify(data, null, 2);
-      });
-      eventFilter.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
+        useEffect(() => {
           loadWebhooks();
+        }, []);
+
+        async function loadWebhooks() {
+          setIsLoadingWebhooks(true);
+          setWebhookMessage('');
+          try {
+            const query = eventFilter.trim()
+              ? `?event=${encodeURIComponent(eventFilter.trim())}`
+              : '';
+            const response = await fetch(`/api/webhooks${query}`);
+            const data = await response.json();
+            const latest = data.webhooks?.[0] ?? null;
+            setWebhookHistory(data.webhooks || []);
+            setLatestWebhook(latest);
+            if (!latest) setWebhookMessage('Nenhum webhook encontrado para o filtro atual.');
+          } catch (error) {
+            setLatestWebhook(null);
+            setWebhookMessage(`Falha ao carregar webhooks: ${error.message}`);
+          } finally {
+            setIsLoadingWebhooks(false);
+          }
         }
-      });
-      loadWebhooks();
 
-      async function loadWebhooks() {
-        const event = eventFilter.value.trim();
-        const query = event ? '?event=' + encodeURIComponent(event) : '';
-        const response = await fetch('/api/webhooks' + query);
-        const data = await response.json();
-        const latest = data.webhooks && data.webhooks[0];
-        webhookOutput.textContent = latest
-          ? JSON.stringify(latest, null, 2)
-          : 'Nenhum webhook recebido ainda.';
+        const latestWebhookSummary = latestWebhook
+          ? {
+              evento: latestWebhook.event || '—',
+              recebidoEm: latestWebhook.receivedAt || '—',
+              origem: latestWebhook.sourceIp || '—',
+              assinatura: latestWebhook.signatureValid ? 'Válida' : 'Inválida',
+              correlationID:
+                latestWebhook.payload?.charge?.correlationID ||
+                latestWebhook.payload?.pix?.charge?.correlationID ||
+                '—',
+              transactionID:
+                latestWebhook.payload?.charge?.transactionID ||
+                latestWebhook.payload?.pix?.transactionID ||
+                '—',
+              status:
+                latestWebhook.payload?.charge?.status ||
+                latestWebhook.payload?.pix?.status ||
+                '—',
+            }
+          : null;
+
+        async function simulatePayment() {
+          if (!lastCharge?.transactionID) {
+            setWebhookMessage('Crie uma cobrança antes de simular o pagamento.');
+            return;
+          }
+          setIsSimulating(true);
+          setWebhookMessage('');
+          try {
+            const response = await fetch('/api/charge/simulate-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ transactionID: lastCharge.transactionID }),
+            });
+            if (!response.ok) {
+              setWebhookMessage('Falha ao simular pagamento.');
+              return;
+            }
+            setWebhookMessage('Pagamento simulado. Atualizando webhooks...');
+            setTimeout(loadWebhooks, 1500);
+          } catch (error) {
+            setWebhookMessage(`Falha ao simular pagamento: ${error.message}`);
+          } finally {
+            setIsSimulating(false);
+          }
+        }
+
+        return (
+          <div className="site-bg">
+            <Navbar />
+            <HeroSection />
+            <SocialProofSection />
+            <ProblemSolutionSection />
+            <FeaturesSection />
+            <HowItWorksSection />
+            <BenefitsSection />
+            <PlaygroundSection
+              form={form}
+              setForm={setForm}
+              lastCharge={lastCharge}
+              setLastCharge={setLastCharge}
+              isCreatingCharge={isCreatingCharge}
+              setIsCreatingCharge={setIsCreatingCharge}
+              chargeMessage={chargeMessage}
+              setChargeMessage={setChargeMessage}
+              simulatePayment={simulatePayment}
+              isSimulating={isSimulating}
+            />
+            <WebhooksSection
+              eventFilter={eventFilter}
+              setEventFilter={setEventFilter}
+              loadWebhooks={loadWebhooks}
+              isLoadingWebhooks={isLoadingWebhooks}
+              latestWebhook={latestWebhook}
+              latestWebhookSummary={latestWebhookSummary}
+              webhookHistory={webhookHistory}
+              activeWebhookTab={activeWebhookTab}
+              setActiveWebhookTab={setActiveWebhookTab}
+              webhookMessage={webhookMessage}
+            />
+            <FinalCTASection />
+            <Footer />
+          </div>
+        );
       }
 
-      function escapeHtml(value) {
-        return String(value)
-          .replaceAll('&', '&amp;')
-          .replaceAll('<', '&lt;')
-          .replaceAll('>', '&gt;')
-          .replaceAll('"', '&quot;')
-          .replaceAll("'", '&#039;');
-      }
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
   </body>
 </html>
